@@ -1,4 +1,4 @@
---select data to be used
+ --select data to be used
 Select Location, date, total_cases, new_cases, total_deaths, population
 From PortFolioProject..CovidDeaths$
 order by 1,2
@@ -11,6 +11,13 @@ From PortFolioProject..CovidDeaths$
 Where location like '%Kenya%'
 order by 1,2
 
+--#1
+Select SUM(new_cases) as total_cases, SUM(cast(new_deaths as int)) as total_deaths, SUM(cast(new_deaths as int))/SUM(New_Cases)*100 as DeathPercentage
+From PortFolioProject..CovidDeaths$
+--Where location like '%states%'
+where continent is not null 
+--Group By date
+order by 1,2
 
 --Comparing Total Cases reported vs Population (what percentage of the population got infected)
 Select Location, date,  population ,total_cases, (total_cases/population)*100 as Infection_PercentageRate
@@ -26,6 +33,13 @@ where continent is not null
 Group by location , population 
 order by Infection_PercentageRate desc
 
+--#2
+Select location, SUM(cast(new_deaths as int)) as TotalDeathCount
+From PortFolioProject..CovidDeaths$
+Where continent is null 
+and location not in ('World', 'European Union', 'International')
+Group by location
+order by TotalDeathCount desc
 
 --which countries had the highest death count per population
 Select Location, max(cast(total_deaths as int)) as Total_Death_Count
@@ -33,6 +47,21 @@ From PortFolioProject..CovidDeaths$
 where continent is not null
 Group by location  
 order by Total_Death_Count desc
+
+--#3
+Select Location, Population, MAX(total_cases) as HighestInfectionCount,  Max((total_cases/population))*100 as PercentPopulationInfected
+From PortFolioProject..CovidDeaths$
+--Where location like '%states%'
+Group by Location, Population
+order by PercentPopulationInfected desc
+
+--#4
+Select Location, Population,date, MAX(total_cases) as HighestInfectionCount,  Max((total_cases/population))*100 as PercentPopulationInfected
+From PortFolioProject..CovidDeaths$
+--Where location like '%states%'
+Group by Location, Population, date
+order by PercentPopulationInfected desc
+
 
 
 -- Death count per continent
