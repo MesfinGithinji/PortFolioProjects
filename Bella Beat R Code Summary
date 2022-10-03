@@ -1,0 +1,50 @@
+library(tidyverse) 
+
+library(ggplot2)
+library(lubridate)
+
+#Now to load the data sets
+activity_merged <- read_csv('dailyActivity_merged.csv')
+
+daily_Calories <- read_csv('dailyCalories_merged.csv')
+
+sleep_day <- read_csv('sleepDay_merged.csv')
+
+View(sleep_day)
+# there were no missing data values in the data set but there were three duplicates found in sleep_day data set
+#To remove the duplicates found in sleep_day
+cleaned_sleep_day <- sleep_day[!duplicated(sleep_day),]
+#To verify we have removed the duplicates
+cleaned_sleep_day %>% duplicated() %>% sum()
+
+# converting the string column (ActivityDate) to date format
+daily_Activity$ActivityDate <- mdy(daily_Activity$ActivityDate)
+head(daily_Activity)
+
+
+merged_data <- merge(sleep, activity_merged, by=c('Id', 'date'))
+head(merged_data)
+
+
+
+ggplot(data=activity_merged, aes(x=TotalSteps, y=Calories)) + 
+  geom_point(colour="Blue") + geom_smooth() + labs(title="Total Steps vs. Calories Burnt") 
+
+
+
+ggplot(data=sleep, aes(x=TotalMinutesAsleep, y=TotalTimeInBed)) + 
+  geom_point(colour="blue")+ geom_smooth() + labs(title="Total Minutes Asleep vs. Total Time in Bed") + theme_grey()
+
+int_new <- intensities %>%
+  group_by(time) %>%
+  drop_na() %>%
+  summarise(mean_total_intensity = mean(TotalIntensity))
+
+ggplot(data=int_new, aes(x=time, y=mean_total_intensity)) + geom_histogram(stat = "identity",colour = "black", fill="grey90") +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(title="Average Total Intensity vs. Time Taken")
+
+
+ggplot(data=merged_data, aes(x=TotalMinutesAsleep, y=SedentaryMinutes)) + 
+  geom_point(color='blue') + geom_smooth() +
+  labs(title="Minutes Asleep vs. Sedentary Minutes") 
